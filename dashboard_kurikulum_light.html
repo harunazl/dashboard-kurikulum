@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Kurikulum S1 Ilmu Gizi — UNSOED 2025</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#F5F7FA;--bg2:#FFFFFF;--bg3:#EEF1F6;--bg4:#E2E8F0;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --text:#1A2235;--text2:#4A5568;--text3:#94A3B8;
+  --blue:#2563EB;--blue-lt:#EFF6FF;--blue-b:#BFDBFE;
+  --violet:#7C3AED;--green:#059669;--green-lt:#ECFDF5;--green-b:#A7F3D0;
+  --amber:#D97706;--amber-lt:#FFFBEB;--red:#DC2626;--red-lt:#FEF2F2;
+  --teal:#0891B2;--pink:#DB2777;
+  --r:12px;--rs:8px;
+  --sh:0 1px 3px rgba(26,34,53,.07),0 4px 16px rgba(26,34,53,.04);
+  --sh-md:0 4px 12px rgba(26,34,53,.1),0 8px 32px rgba(26,34,53,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.tb-l{display:flex;align-items:center;gap:12px}
+.logo{width:38px;height:38px;background:linear-gradient(135deg,#2563EB,#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:13px;color:#fff;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:600}
+.tb-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.bdg{font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 9px;border-radius:20px;font-weight:500}
+.bdg-b{background:var(--blue-lt);color:var(--blue);border:1px solid var(--blue-b)}
+.bdg-g{background:var(--green-lt);color:var(--green);border:1px solid var(--green-b)}
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:18px 28px;border-bottom:1px solid var(--border)}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;box-shadow:var(--sh);transition:box-shadow .2s}
+.kpi:hover{box-shadow:var(--sh-md)}
+.kpi-lbl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-weight:600}
+.kpi-val{font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px}
+/* TABS */
+.nav{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;display:flex;overflow-x:auto}
+.tb{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:500;padding:13px 16px;border:none;background:transparent;color:var(--text2);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px}
+.tb:hover:not(.active){color:var(--text);background:var(--bg3)}
+.tb.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tn{font-size:10px;font-family:'JetBrains Mono',monospace;background:var(--bg3);color:var(--text3);padding:1px 5px;border-radius:8px}
+.tb.active .tn{background:var(--blue-lt);color:var(--blue)}
+/* PANEL */
+.panel{padding:22px 28px;display:none}
+.panel.active{display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* CARD */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);transition:box-shadow .2s}
+.card:hover{box-shadow:var(--sh-md)}
+.ct{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.ct::before{content:'';display:inline-block;width:3px;height:11px;background:var(--blue);border-radius:2px;flex-shrink:0}
+/* BAR */
+.br{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bl{font-size:11px;color:var(--text2);width:160px;flex-shrink:0;text-align:right;line-height:1.3}
+.bt{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.bf{height:100%;border-radius:4px}
+.bv{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);width:30px;text-align:right;flex-shrink:0}
+/* INSIGHT */
+.ins{background:var(--blue-lt);border:1px solid var(--blue-b);border-radius:var(--rs);padding:10px 14px;font-size:11px;color:#1D4ED8;margin-top:12px;line-height:1.6}
+.ins::before{content:'↳ ';font-weight:600}
+/* LEGEND */
+.leg{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}
+.li{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
+.ld{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ls{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+/* MATRIX */
+.mf{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.chip{font-size:11px;padding:4px 11px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.sel{background:var(--blue-lt);color:var(--blue);border-color:var(--blue-b)}
+.mi{font-size:11px;color:var(--text2);margin-bottom:8px;padding:8px 12px;background:var(--bg3);border-radius:var(--rs);line-height:1.6}
+.ms{overflow:auto;max-height:480px;border:1px solid var(--border);border-radius:var(--rs)}
+.mt{border-collapse:collapse;width:100%;font-size:11px;min-width:760px}
+.mt thead th{padding:7px 5px;font-weight:600;color:var(--text2);text-align:center;border-bottom:2px solid var(--border);background:var(--bg3);position:sticky;top:0;z-index:2;font-size:10px;text-transform:uppercase;letter-spacing:.05em}
+.mt thead th.mh{text-align:left;padding-left:12px;min-width:200px}
+.mt thead th.ch{min-width:100px;font-size:9px}
+.mt tbody td{padding:5px 4px;border-bottom:1px solid var(--border);text-align:center;transition:background .1s}
+.mt tbody td.mn{text-align:left;padding-left:12px;color:var(--text);font-size:11px;font-weight:500;background:#fff}
+.mt tbody td.mc{text-align:left;padding-left:8px;color:var(--text3);font-size:10px;font-family:'JetBrains Mono',monospace;background:#fff}
+.mt tbody tr:hover td{background:var(--bg3)}
+.mt tbody tr:hover td.mn,.mt tbody tr:hover td.mc{background:var(--bg3)}
+.don{width:11px;height:11px;border-radius:50%;background:var(--blue);display:inline-block}
+.dhi{width:12px;height:12px;border-radius:50%;background:var(--green);display:inline-block;box-shadow:0 0 0 3px rgba(5,150,105,.18)}
+.dof{width:7px;height:7px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);display:inline-block}
+.tt{font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600;margin-left:4px}
+.ttW{background:#DBEAFE;color:#1E40AF}
+.ttP{background:#D1FAE5;color:#065F46}
+.ttN{background:#FEF3C7;color:#92400E}
+.ttK{background:#EDE9FE;color:#5B21B6}
+/* ROADMAP */
+.rw{overflow-x:auto;padding-bottom:6px}
+.rg{display:grid;grid-template-columns:repeat(8,138px);gap:8px;min-width:1160px}
+.rc{display:flex;flex-direction:column;gap:5px}
+.rh{font-size:10px;font-weight:700;text-align:center;padding:5px;background:var(--bg3);border-radius:6px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--border)}
+.rs{font-size:9px;color:var(--text3);text-align:center;margin-top:1px;font-family:'JetBrains Mono',monospace}
+.rn{border-radius:8px;padding:7px 8px;font-size:10px;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.rn:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.rn .rc2{font-size:8px;font-family:'JetBrains Mono',monospace;opacity:.55;margin-bottom:2px}
+.rn .rna{font-weight:600;line-height:1.3}
+.rn .rns{font-size:9px;opacity:.6;margin-top:2px;font-family:'JetBrains Mono',monospace}
+.rn .rnp{font-size:8px;opacity:.45;margin-top:2px}
+.tk{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE}
+.tm{background:#F0FDF4;color:#166534;border-color:#BBF7D0}
+.tM{background:#FFFBEB;color:#92400E;border-color:#FDE68A}
+.tr{background:#F5F3FF;color:#5B21B6;border-color:#DDD6FE}
+.tu{background:var(--bg3);color:var(--text2);border-color:var(--border)}
+.tp{background:#FFF1F2;color:#9F1239;border-color:#FECDD3}
+.tleg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);font-weight:500}
+.tld{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+/* PETA IMAGE */
+.ptab{display:flex;gap:6px;margin-bottom:12px}
+.ptb{font-size:12px;padding:5px 13px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;color:var(--text2);transition:all .15s}
+.ptb.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pw{border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;background:var(--bg3);min-height:180px;display:flex;align-items:center;justify-content:center}
+.pw img{max-width:100%;height:auto;display:block}
+.pp{text-align:center;padding:32px 16px;color:var(--text3)}
+.pp .pi{font-size:36px;margin-bottom:8px}
+.pp p{font-size:11px;line-height:1.6}
+.pun{font-size:11px;background:var(--amber-lt);border:1px solid #FDE68A;border-radius:var(--rs);padding:8px 12px;margin-top:8px;color:var(--amber);text-align:left}
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.mbox{background:#fff;border-radius:var(--r);padding:26px;max-width:450px;width:92%;box-shadow:var(--sh-md)}
+.mbox h3{font-size:14px;font-weight:600;margin-bottom:5px}
+.mbox p{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.6}
+.mcode{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:10px}
+.mlink{display:block;font-size:12px;color:var(--blue);text-decoration:none;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:6px;transition:all .15s;font-weight:500}
+.mlink:hover{background:var(--blue-lt);border-color:var(--blue-b)}
+.mcls{font-size:12px;padding:7px 16px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--bg3);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-top:10px;font-weight:500;color:var(--text2)}
+/* HEATMAP */
+.hg{display:grid;grid-template-columns:100px repeat(8,1fr);gap:4px;margin-top:6px}
+.hch{font-size:10px;color:var(--text3);text-align:center;padding:3px 2px;font-family:'JetBrains Mono',monospace;font-weight:500}
+.hl{font-size:11px;color:var(--text2);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-weight:500}
+.hc{border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 3px;min-height:50px;transition:transform .15s}
+.hc:hover{transform:scale(1.04)}
+.hn{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.hsu{font-size:9px;margin-top:1px;opacity:.65}
+/* ASSESS */
+.ah{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mt2{display:flex;gap:6px}
+.mb2{font-size:12px;padding:5px 13px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;color:var(--text2);transition:all .15s}
+.mb2.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.svb{font-size:12px;padding:5px 15px;border-radius:6px;border:1px solid var(--green-b);background:var(--green-lt);color:var(--green);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;transition:all .15s}
+.svb:hover{background:#D1FAE5}
+.arow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.arow:last-child{border-bottom:none}
+.amk{font-size:11px;font-weight:500;color:var(--text);width:210px;flex-shrink:0;line-height:1.3}
+.amkc{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text3);display:block;margin-top:1px}
+.asem{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);width:30px;flex-shrink:0;text-align:center}
+.abw{flex:1}
+.abg{height:19px;background:var(--bg3);border-radius:10px;overflow:hidden}
+.abf{height:100%;border-radius:10px;display:flex;align-items:center;padding-left:9px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#fff;transition:width .5s}
+.apct{font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;min-width:36px;text-align:right;flex-shrink:0}
+.sp{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;min-width:96px;text-align:center;flex-shrink:0}
+.so{background:var(--green-lt);color:var(--green)}
+.sw{background:var(--amber-lt);color:var(--amber)}
+.sc{background:var(--red-lt);color:var(--red)}
+.sn{background:var(--bg3);color:var(--text3)}
+.ain{width:62px;background:#fff;border:1px solid var(--border2);border-radius:var(--rs);padding:3px 7px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;text-align:right}
+.ain:focus{outline:none;border-color:var(--blue)}
+.csg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}
+.csc{background:var(--bg3);border-radius:var(--rs);padding:11px;border:1px solid var(--border);transition:all .15s}
+.csc:hover{border-color:var(--border2)}
+.csc .cc{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text2);font-weight:600;margin-bottom:3px}
+.csc .cv{font-size:21px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.csc .cs{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.3}
+.mb{height:4px;background:var(--border);border-radius:2px;margin-top:5px;overflow:hidden}
+.mf2{height:100%;border-radius:2px}
+/* FILES */
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fc{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);transition:all .2s;cursor:pointer;text-decoration:none;display:block}
+.fc:hover{box-shadow:var(--sh-md);border-color:var(--border2);transform:translateY(-2px)}
+.fi{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.fn{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.4}
+.fd{font-size:11px;color:var(--text2);line-height:1.5}
+.fs{font-size:10px;margin-top:9px;padding:2px 8px;border-radius:7px;display:inline-block;font-weight:500}
+.fsa{background:var(--green-lt);color:var(--green)}
+.fsi{background:var(--blue-lt);color:var(--blue)}
+.ug{background:var(--amber-lt);border:1px solid #FDE68A;border-radius:var(--r);padding:18px;margin-top:16px}
+.ugt{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:10px}
+.ugst{font-size:12px;color:#92400E;margin-bottom:7px;display:flex;gap:8px;align-items:flex-start}
+.ugn{background:var(--amber);color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg3)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-l">
+    <div class="logo">GZ</div>
+    <div><div class="tb-title">Dashboard Kurikulum S1 Ilmu Gizi</div><div class="tb-sub">Universitas Jenderal Soedirman · Fak. Ilmu-Ilmu Kesehatan</div></div>
+  </div>
+  <div style="display:flex;gap:7px;align-items:center"><span class="bdg bdg-b">Kurikulum 2025</span><span class="bdg bdg-g">Akreditasi Unggul</span></div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-lbl">Total MK</div><div class="kpi-val" style="color:#2563EB">69</div><div class="kpi-sub">51 wajib prodi · 10 nasional/PKL · 8 pilihan</div></div>
+  <div class="kpi"><div class="kpi-lbl">Total SKS</div><div class="kpi-val" style="color:#0891B2">144</div><div class="kpi-sub">136 wajib + 8–12 pilihan</div></div>
+  <div class="kpi"><div class="kpi-lbl">CPL</div><div class="kpi-val" style="color:#059669">9</div><div class="kpi-sub">Sikap · Pengetahuan · KK</div></div>
+  <div class="kpi"><div class="kpi-lbl">Profil Lulusan</div><div class="kpi-val" style="color:#DB2777">7</div><div class="kpi-sub">PL1–PL7 (AIPGI)</div></div>
+  <div class="kpi"><div class="kpi-lbl">Avg. Capaian CPL</div><div class="kpi-val" id="kpi-avg" style="color:#D97706">—</div><div class="kpi-sub">isi data di Assessment Tracker</div></div>
+</div>
+
+<div class="nav">
+  <button class="tb active" onclick="switchTab('radar',this)">📊 Profil Kompetensi</button>
+  <button class="tb" onclick="switchTab('matrix',this)">⊞ Matriks CPL <span class="tn">69 MK</span></button>
+  <button class="tb" onclick="switchTab('roadmap',this)">🗺 Peta Jalan Kompetensi</button>
+  <button class="tb" onclick="switchTab('heatmap',this)">🔥 Sebaran Beban SKS</button>
+  <button class="tb" onclick="switchTab('assess',this)">🎯 Assessment Tracker <span class="tn" id="ab">isi data</span></button>
+  <button class="tb" onclick="switchTab('files',this)">📁 File Kurikulum</button>
+</div>
+
+<!-- ═══ PANEL 1: RADAR ═══ -->
+<div id="panel-radar" class="panel active">
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Porsi domain kompetensi dalam kurikulum</div>
+      <div style="position:relative;height:295px"><canvas id="radarChart"></canvas></div>
+      <div class="ins">Gizi Klinik mendominasi porsi kompetensi (28%). Perlu penguatan MK Riset EBP (13%) dan Manajemen Pangan (15%) agar profil PL3, PL6, PL7 lebih kompetitif.</div>
+    </div>
+    <div class="card">
+      <div class="ct">Jumlah MK per CPL (dari 69 MK total)</div>
+      <div style="margin-top:4px">
+        <div class="br"><span class="bl">CPL-1 Sikap & etika</span><div class="bt"><div class="bf" style="width:100%;background:#059669"></div></div><span class="bv" style="color:#059669">69</span></div>
+        <div class="br"><span class="bl">CPL-2 Konsep gizi</span><div class="bt"><div class="bf" style="width:100%;background:#059669"></div></div><span class="bv" style="color:#059669">69</span></div>
+        <div class="br"><span class="bl">CPL-3 Pemikiran kritis</span><div class="bt"><div class="bf" style="width:59%;background:#2563EB"></div></div><span class="bv">41</span></div>
+        <div class="br"><span class="bl">CPL-4 Profesionalisme</span><div class="bt"><div class="bf" style="width:43%;background:#2563EB"></div></div><span class="bv">30</span></div>
+        <div class="br"><span class="bl">CPL-5 Meta-kognitif</span><div class="bt"><div class="bf" style="width:37%;background:#7C3AED"></div></div><span class="bv">26</span></div>
+        <div class="br"><span class="bl">CPL-6 Komunikasi</span><div class="bt"><div class="bf" style="width:33%;background:#7C3AED"></div></div><span class="bv">23</span></div>
+        <div class="br"><span class="bl">CPL-9 Kearifan lokal</span><div class="bt"><div class="bf" style="width:28%;background:#DB2777"></div></div><span class="bv">19</span></div>
+        <div class="br"><span class="bl">CPL-7 Manajemen pangan</span><div class="bt"><div class="bf" style="width:16%;background:#D97706"></div></div><span class="bv">11</span></div>
+        <div class="br"><span class="bl">CPL-8 Riset EBP</span><div class="bt"><div class="bf" style="width:13%;background:#D97706"></div></div><span class="bv">9</span></div>
+      </div>
+      <div class="leg">
+        <div class="li"><div class="ls" style="background:#059669"></div>Pondasi universal</div>
+        <div class="li"><div class="ls" style="background:#2563EB"></div>Kognitif tinggi</div>
+        <div class="li"><div class="ls" style="background:#7C3AED"></div>Interpersonal</div>
+        <div class="li"><div class="ls" style="background:#D97706"></div>Perlu penguatan</div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="ct">Estimasi SKS per profil lulusan (PL1–PL7)</div>
+    <div style="position:relative;height:185px"><canvas id="plChart"></canvas></div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 2: MATRIX ═══ -->
+<div id="panel-matrix" class="panel">
+  <div class="mf" id="mf"></div>
+  <div class="mi" id="mi">Menampilkan semua <strong>69 mata kuliah</strong>. Klik CPL untuk memfilter — titik hijau = CPL yang dipilih.</div>
+  <div class="ms"><table class="mt"><thead><tr>
+    <th class="mh">Mata Kuliah</th><th class="ch">Kode MK</th>
+    <th>Smt</th><th>SKS</th>
+    <th>CPL-1</th><th>CPL-2</th><th>CPL-3</th><th>CPL-4</th>
+    <th>CPL-5</th><th>CPL-6</th><th>CPL-7</th><th>CPL-8</th><th>CPL-9</th>
+  </tr></thead><tbody id="mb"></tbody></table></div>
+</div>
+
+<!-- ═══ PANEL 3: ROADMAP ═══ -->
+<div id="panel-roadmap" class="panel">
+  <div class="tleg">
+    <div class="tli"><div class="tld" style="background:#3B82F6"></div>Gizi Klinik</div>
+    <div class="tli"><div class="tld" style="background:#10B981"></div>Gizi Masyarakat</div>
+    <div class="tli"><div class="tld" style="background:#F59E0B"></div>Manajemen Pangan</div>
+    <div class="tli"><div class="tld" style="background:#8B5CF6"></div>Riset</div>
+    <div class="tli"><div class="tld" style="background:#94A3B8"></div>Pondasi / MKWK</div>
+    <div class="tli"><div class="tld" style="background:#F43F5E"></div>Praktik / TA</div>
+  </div>
+  <div style="font-size:11px;color:var(--text2);margin-bottom:10px;padding:7px 12px;background:var(--bg3);border-radius:var(--rs)">💡 Klik mata kuliah untuk melihat detail CPL & link RPS. Prasyarat ditampilkan di bagian bawah kartu.</div>
+  <div class="rw"><div class="rg" id="rg"></div></div>
+  <div style="margin-top:18px" class="g2">
+    <div class="card">
+      <div class="ct">Peta Kurikulum & Kompetensi</div>
+      <div class="ptab">
+        <button class="ptb active" onclick="showPeta('k',this)">Peta Kurikulum</button>
+        <button class="ptb" onclick="showPeta('c',this)">Peta Kompetensi</button>
+      </div>
+      <div class="pw" id="pw-k">
+        <img src="PETA_KURIKULUM_2025.jpg" alt="Peta Kurikulum 2025" onerror="this.parentNode.innerHTML=pt('Peta Kurikulum 2025','PETA_KURIKULUM_2025.jpg')">
+      </div>
+      <div class="pw" id="pw-c" style="display:none">
+        <img src="PETA_KOMPETENSI_S1_ILMU_GIZI.pdf" alt="Peta Kompetensi" onerror="this.parentNode.innerHTML=pt('Peta Kompetensi S1 Ilmu Gizi','PETA_KOMPETENSI_S1_ILMU_GIZI.pdf')">
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Cara menampilkan file peta</div>
+      <div class="ug" style="margin-top:0;border-radius:var(--rs)">
+        <div class="ugt">Letakkan file-file ini di folder yang sama dengan HTML:</div>
+        <div class="ugst"><div class="ugn">1</div><span><strong>PETA_KURIKULUM_2025.jpg</strong> — gambar peta kurikulum</span></div>
+        <div class="ugst"><div class="ugn">2</div><span><strong>PETA_KOMPETENSI_S1_ILMU_GIZI.pdf</strong> — dokumen peta kompetensi</span></div>
+        <div class="ugst"><div class="ugn">3</div><span>Buka file HTML di browser (Chrome/Firefox) — peta tampil otomatis</span></div>
+        <div class="ugst"><div class="ugn">4</div><span>Untuk RPS per MK: letakkan file bernama <strong>RPS_GIZ251101.pdf</strong> dst.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 4: HEATMAP ═══ -->
+<div id="panel-heatmap" class="panel">
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Intensitas beban SKS per semester (heatmap)</div>
+      <div id="hg" class="hg"></div>
+      <div class="ins">Beban puncak di Smt 3–4 (24 SKS, 11 MK). Smt 7 paling ringan secara nominal (7 SKS) namun Skripsi memerlukan intensitas kognitif tinggi secara mandiri.</div>
+    </div>
+    <div class="card">
+      <div class="ct">Akumulasi muatan CPL per semester</div>
+      <div style="position:relative;height:250px"><canvas id="mChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="ct">Proporsi jenis MK per semester (%)</div>
+    <div style="position:relative;height:195px"><canvas id="tChart"></canvas></div>
+    <div class="leg">
+      <div class="li"><div class="ls" style="background:#2563EB"></div>MK Wajib Prodi</div>
+      <div class="li"><div class="ls" style="background:#059669"></div>MK Pilihan</div>
+      <div class="li"><div class="ls" style="background:#D97706"></div>MKWK Nasional</div>
+      <div class="li"><div class="ls" style="background:#7C3AED"></div>Praktik / TA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 5: ASSESS ═══ -->
+<div id="panel-assess" class="panel">
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="ct">Capaian CPL vs target 80% (radar)</div>
+      <div style="position:relative;height:275px"><canvas id="ar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Status capaian per CPL</div>
+      <div class="csg" id="csg"></div>
+      <div class="leg">
+        <div class="li"><div class="ld" style="background:#059669"></div>Tercapai ≥80%</div>
+        <div class="li"><div class="ld" style="background:#D97706"></div>Perhatian 65–79%</div>
+        <div class="li"><div class="ld" style="background:#DC2626"></div>Kritis &lt;65%</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ah">
+      <div class="ct" style="margin-bottom:0">Assessment tracker — 69 MK (ketercapaian CPL per MK)</div>
+      <div style="display:flex;gap:7px;align-items:center">
+        <div class="mt2"><button class="mb2 active" id="bv" onclick="setMode('view')">Lihat</button><button class="mb2" id="be" onclick="setMode('edit')">✏ Isi Data</button></div>
+        <button class="svb" id="sb" style="display:none" onclick="saveAssess()">✓ Simpan</button>
+      </div>
+    </div>
+    <div style="margin:8px 0;font-size:11px;color:var(--text3)">Isi nilai ketercapaian (0–100) per mata kuliah sesuai hasil evaluasi. Nilai di-rata-rata berdasarkan CPL yang dibebankan pada MK tersebut.</div>
+    <div id="al"></div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 6: FILES ═══ -->
+<div id="panel-files" class="panel">
+  <div class="card" style="margin-bottom:14px">
+    <div class="ct">File penting kurikulum S1 Ilmu Gizi UNSOED 2025</div>
+    <div class="fg">
+      <a class="fc" href="PETA_KURIKULUM_2025.jpg" target="_blank">
+        <div class="fi" style="background:#DBEAFE">🗺</div>
+        <div class="fn">Peta Kurikulum 2025</div>
+        <div class="fd">Diagram alur 69 MK selama 8 semester beserta prasyarat dan kode.</div>
+        <span class="fs fsa">📎 Buka gambar</span>
+      </a>
+      <a class="fc" href="PETA_KOMPETENSI_S1_ILMU_GIZI.pdf" target="_blank">
+        <div class="fi" style="background:#FEE2E2">📋</div>
+        <div class="fn">Peta Kompetensi S1 Ilmu Gizi</div>
+        <div class="fd">Peta kompetensi lengkap per CPL dari semester 1 sampai 8 hingga S.Gz.</div>
+        <span class="fs fsa">📎 Buka PDF</span>
+      </a>
+      <a class="fc" href="Kerjakan_buku_kurikulumnya_disini.docx" target="_blank">
+        <div class="fi" style="background:#D1FAE5">📘</div>
+        <div class="fn">Buku Kurikulum 2025</div>
+        <div class="fd">Dokumen lengkap: CPL, struktur MK, matrix pemetaan CPL, pengukuran ketercapaian.</div>
+        <span class="fs fsa">📎 Unduh DOCX</span>
+      </a>
+      <div class="fc" style="cursor:default;border-style:dashed;background:var(--bg3)">
+        <div class="fi" style="background:#EDE9FE">📝</div>
+        <div class="fn">RPS Mata Kuliah</div>
+        <div class="fd">RPS per MK bisa diakses via panel Peta Jalan Kompetensi — klik kartu MK untuk membuka.</div>
+        <span class="fs fsi">💡 Via Peta Jalan</span>
+      </div>
+      <div class="fc" style="cursor:default;border-style:dashed;background:var(--bg3)">
+        <div class="fi" style="background:#FEF3C7">📊</div>
+        <div class="fn">Laporan Evaluasi CPL</div>
+        <div class="fd">Data ketercapaian CPL per tahun akademik. Isi via Assessment Tracker lalu simpan.</div>
+        <span class="fs fsi">💡 Via Tracker</span>
+      </div>
+      <div class="fc" style="cursor:default;border-style:dashed;background:var(--bg3)">
+        <div class="fi" style="background:#F5F3FF">🎓</div>
+        <div class="fn">SK & Dokumen Akreditasi</div>
+        <div class="fd">SK Kurikulum 2025 dan dokumen pendukung akreditasi Unggul program studi.</div>
+        <span class="fs fsi">Tambahkan file</span>
+      </div>
+    </div>
+  </div>
+  <div class="ug">
+    <div class="ugt">📂 Cara menambah & mengakses file dalam dashboard ini</div>
+    <div class="ugst"><div class="ugn">1</div><span>Letakkan semua file (JPG, PDF, DOCX) di <strong>folder yang sama</strong> dengan file HTML ini.</span></div>
+    <div class="ugst"><div class="ugn">2</div><span>Untuk RPS: beri nama file <strong>RPS_[KODEMK].pdf</strong> tanpa spasi, misalnya <em>RPS_GIZ251101.pdf</em>, <em>RPS_UNO1001.pdf</em></span></div>
+    <div class="ugst"><div class="ugn">3</div><span>Buka file HTML di browser (Chrome/Firefox) — semua file terhubung otomatis.</span></div>
+    <div class="ugst"><div class="ugn">4</div><span>Untuk berbagi dengan tim: <strong>zip seluruh folder</strong> lalu kirimkan. Penerima buka file HTML-nya.</span></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="mdl">
+  <div class="mbox">
+    <div class="mcode" id="mco"></div>
+    <h3 id="mna"></h3>
+    <p id="mde"></p>
+    <a class="mlink" id="mrl" href="#" target="_blank">📄 Buka RPS Mata Kuliah</a>
+    <a class="mlink" href="https://siakad.unsoed.ac.id" target="_blank" style="color:#0891B2">🌐 SIAKAD UNSOED</a>
+    <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px">
+      <div style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:600">CPL yang dibebankan:</div>
+      <div id="mcp" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+    </div>
+    <button class="mcls" onclick="closeMdl()">Tutup</button>
+  </div>
+</div>
+
+<script>
+// ══════════ DATA 69 MK (dari dokumen asli) ══════════
+const MK=[
+  // SEM 1
+  {no:1,k:'UNO 1001',n:'Pendidikan Pancasila',s:1,sks:2,t:'N',c:[1,2,3],p:[],tr:'u'},
+  {no:2,k:'UNO 1008',n:'Jatidiri Unsoed',s:1,sks:2,t:'N',c:[1,2,4,6,9],p:[],tr:'u'},
+  {no:3,k:'GIZ 251101',n:'Anatomi Fisiologi I',s:1,sks:3,t:'W',c:[1,2,3,5],p:[],tr:'k'},
+  {no:4,k:'GIZ 251102',n:'Ilmu Bahan Pangan',s:1,sks:3,t:'W',c:[1,2,3,7,9],p:[],tr:'M'},
+  {no:5,k:'GIZ 251103',n:'Prinsip-prinsip Ilmu Gizi',s:1,sks:3,t:'W',c:[1,2,3,6],p:[],tr:'u'},
+  {no:6,k:'GIZ 251104',n:'Ilmu Kesehatan Masyarakat',s:1,sks:2,t:'W',c:[1,2,4,6],p:[],tr:'m'},
+  {no:7,k:'GIZ 251105',n:'Sosio-Antropologi Gizi',s:1,sks:2,t:'W',c:[1,2,3,6,9],p:[],tr:'m'},
+  {no:8,k:'GIZ 251106',n:'Psikologi Gizi',s:1,sks:2,t:'W',c:[1,2,3,6],p:[],tr:'u'},
+  // SEM 2
+  {no:9,k:'UNO 1007',n:'Kewarganegaraan',s:2,sks:2,t:'N',c:[1,2,3,5],p:[],tr:'u'},
+  {no:10,k:'UNO 1002-1009',n:'Pendidikan Agama',s:2,sks:2,t:'N',c:[1,2,3,5],p:[],tr:'u'},
+  {no:11,k:'UNO 1010',n:'Bahasa Indonesia',s:2,sks:2,t:'N',c:[1,2,3,8],p:[],tr:'u'},
+  {no:12,k:'GIZ 251207',n:'Bahasa Inggris',s:2,sks:2,t:'W',c:[1,2,3],p:[],tr:'u'},
+  {no:13,k:'GIZ 252208',n:'Anatomi Fisiologi II',s:2,sks:3,t:'W',c:[1,2,3,5],p:['GIZ 251101'],tr:'k'},
+  {no:14,k:'GIZ 251209',n:'Biokimia Gizi',s:2,sks:3,t:'W',c:[1,2,3,5,8],p:[],tr:'k'},
+  {no:15,k:'GIZ 252210',n:'Teknologi Pengolahan Pangan',s:2,sks:2,t:'W',c:[1,2,3,7],p:['GIZ 251102'],tr:'M'},
+  {no:16,k:'GIZ 252211',n:'Gizi Kuliner I',s:2,sks:2,t:'W',c:[1,2,3,7,9],p:['GIZ 251102'],tr:'M'},
+  {no:17,k:'GIZ 251212',n:'Gizi Masyarakat',s:2,sks:2,t:'W',c:[1,2,4,6,9],p:['GIZ 251104'],tr:'m'},
+  // SEM 3
+  {no:18,k:'GIZ 252313',n:'Metabolisme Energi dan ZG Makro',s:3,sks:2,t:'W',c:[1,2,3,5],p:['GIZ 251209'],tr:'k'},
+  {no:19,k:'GIZ 251314',n:'Imunologi Gizi',s:3,sks:2,t:'W',c:[1,2,3,5],p:[],tr:'k'},
+  {no:20,k:'GIZ 212315',n:'Gizi Kuliner II',s:3,sks:2,t:'W',c:[1,2,3,5,7,9],p:['GIZ 252211'],tr:'M'},
+  {no:21,k:'GIZ 251316',n:'Analisis Zat Gizi Pangan',s:3,sks:3,t:'W',c:[1,2,3,5,9],p:[],tr:'k'},
+  {no:22,k:'GIZ 252317',n:'Penilaian Status Gizi',s:3,sks:3,t:'W',c:[1,2,4,6,9],p:['GIZ 251212'],tr:'m'},
+  {no:23,k:'GIZ 251318',n:'Penilaian Konsumsi Pangan',s:3,sks:2,t:'W',c:[1,2,4,6],p:[],tr:'m'},
+  {no:24,k:'GIZ 251319',n:'Ekonomi Pangan dan Gizi',s:3,sks:2,t:'W',c:[1,2,3,5],p:[],tr:'u'},
+  {no:25,k:'GIZ 251320',n:'Bioetika',s:3,sks:2,t:'W',c:[1,2,4,8],p:[],tr:'r'},
+  {no:26,k:'GIZ 251321',n:'Statistik I',s:3,sks:2,t:'W',c:[1,2,3,5],p:[],tr:'r'},
+  {no:27,k:'GIZ 251322',n:'Dasar Manajemen',s:3,sks:2,t:'W',c:[1,2,3,5],p:[],tr:'M'},
+  {no:28,k:'GIZ 251323',n:'Gizi dalam Daur Kehidupan',s:3,sks:2,t:'W',c:[1,2,3,5],p:[],tr:'k'},
+  // SEM 4
+  {no:29,k:'GIZ 251424',n:'Patofisiologi Infeksi & Defisiensi',s:4,sks:2,t:'W',c:[1,2,3,5],p:[],tr:'k'},
+  {no:30,k:'GIZ 251425',n:'Metabolisme Zat Gizi Mikro',s:4,sks:2,t:'W',c:[1,2,3,5],p:[],tr:'k'},
+  {no:31,k:'GIZ 251426',n:'Asuhan Gizi',s:4,sks:3,t:'W',c:[1,2,4,6,9],p:[],tr:'k'},
+  {no:32,k:'GIZ 251427',n:'Manajemen Mutu & Keamanan Pangan',s:4,sks:2,t:'W',c:[1,2,4,7,9],p:[],tr:'M'},
+  {no:33,k:'GIZ 251428',n:'Epidemiologi Gizi',s:4,sks:2,t:'W',c:[1,2,3,5,9],p:[],tr:'m'},
+  {no:34,k:'GIZ 251429',n:'Pendidikan Gizi',s:4,sks:3,t:'W',c:[1,2,4,6,9],p:[],tr:'m'},
+  {no:35,k:'GIZ 251430',n:'Gizi Perdesaan',s:4,sks:2,t:'W',c:[1,2,4,9],p:[],tr:'m'},
+  {no:36,k:'GIZ 251431',n:'Gizi Olahraga',s:4,sks:2,t:'W',c:[1,2,4,6],p:[],tr:'k'},
+  {no:37,k:'GIZ 252432',n:'Statistik II',s:4,sks:3,t:'W',c:[1,2,3,8],p:['GIZ 251321'],tr:'r'},
+  {no:38,k:'GIZ 251433',n:'Kewirausahaan',s:4,sks:3,t:'W',c:[1,2,4,7,9],p:[],tr:'M'},
+  // SEM 5 (wajib)
+  {no:39,k:'GIZ 251534',n:'Patofisiologi Penyakit Tidak Menular',s:5,sks:2,t:'W',c:[1,2,3,5],p:[],tr:'k'},
+  {no:40,k:'GIZ 252535',n:'Dietetika Penyakit Infeksi & Defisiensi',s:5,sks:3,t:'W',c:[1,2,4,6],p:['GIZ 251424','GIZ 251426'],tr:'k'},
+  {no:41,k:'GIZ 251536',n:'Pengembangan Produk Pangan Lokal',s:5,sks:2,t:'W',c:[1,2,3,9],p:[],tr:'M'},
+  {no:42,k:'GIZ 251537',n:'Manajemen Sistem Penyelenggaraan Makanan',s:5,sks:3,t:'W',c:[1,2,4,7],p:[],tr:'M'},
+  {no:43,k:'GIZ 251538',n:'Manajemen Program Gizi',s:5,sks:3,t:'W',c:[1,2,4,6,9],p:[],tr:'m'},
+  {no:44,k:'GIZ 252539',n:'Metodologi Penelitian Gizi',s:5,sks:3,t:'W',c:[1,2,3,8],p:['GIZ 252432'],tr:'r'},
+  // SEM 5 (pilihan)
+  {no:45,k:'GIZ 251540',n:'Gizi Tumbuh Kembang',s:5,sks:2,t:'P',c:[1,2,3,5],p:[],tr:'k'},
+  {no:46,k:'GIZ 251541',n:'Gizi Molekuler Dasar',s:5,sks:2,t:'P',c:[1,2,3,5],p:[],tr:'r'},
+  {no:47,k:'GIZ 251542',n:'Suplemen dan Pangan Fungsional',s:5,sks:2,t:'P',c:[1,2,3,5],p:[],tr:'k'},
+  {no:48,k:'GIZ 251543',n:'Ekologi Pangan dan Gizi',s:5,sks:2,t:'P',c:[1,2,3,8],p:[],tr:'m'},
+  {no:49,k:'GIZ 251544',n:'Perkembangan Gizi Terkini',s:5,sks:2,t:'P',c:[1,2,3,8],p:[],tr:'r'},
+  {no:50,k:'GIZ 251545',n:'Interaksi Obat dan Makanan',s:5,sks:2,t:'P',c:[1,2,3,5],p:[],tr:'k'},
+  {no:51,k:'GIZ 251546',n:'Kolaborasi Tim Kesehatan',s:5,sks:2,t:'P',c:[1,2,4,6],p:[],tr:'m'},
+  // SEM 6 (wajib)
+  {no:52,k:'GIZ 252647',n:'Dietetika Penyakit Tidak Menular',s:6,sks:3,t:'W',c:[1,2,3,6],p:['GIZ 251534','GIZ 251426'],tr:'k'},
+  {no:53,k:'GIZ 251648',n:'Diet Menu Lokal',s:6,sks:2,t:'W',c:[1,2,4,9],p:[],tr:'M'},
+  {no:54,k:'GIZ 251649',n:'Manajemen Industri Jasa Pangan',s:6,sks:3,t:'W',c:[1,2,4,7],p:[],tr:'M'},
+  {no:55,k:'GIZ 252650',n:'Intervensi Gizi',s:6,sks:3,t:'W',c:[1,2,4,6,9],p:['GIZ 251538'],tr:'m'},
+  {no:56,k:'GIZ 251651',n:'Konseling Gizi',s:6,sks:3,t:'W',c:[1,2,4,6,9],p:[],tr:'m'},
+  {no:57,k:'GIZ 252652',n:'Pengembangan Proposal Penelitian',s:6,sks:2,t:'W',c:[1,2,4,8,9],p:['GIZ 252539'],tr:'r'},
+  // SEM 6 (pilihan)
+  {no:58,k:'GIZ 251653',n:'Gizi Kesehatan Reproduksi',s:6,sks:2,t:'P',c:[1,2,3,5],p:[],tr:'k'},
+  {no:59,k:'GIZ 251654',n:'Gizi Kerja',s:6,sks:2,t:'P',c:[1,2,3,5],p:[],tr:'k'},
+  {no:60,k:'GIZ 251655',n:'Gizi Kebugaran dan Estetika',s:6,sks:2,t:'P',c:[1,2,3,5],p:[],tr:'k'},
+  {no:61,k:'GIZ 251656',n:'Pengembangan Media Komunikasi',s:6,sks:2,t:'P',c:[1,2,3,6],p:[],tr:'m'},
+  {no:62,k:'GIZ 251657',n:'Percobaan Makanan',s:6,sks:2,t:'P',c:[1,2,3,7,9],p:[],tr:'M'},
+  {no:63,k:'GIZ 251658',n:'Surveilans Gizi',s:6,sks:2,t:'P',c:[1,2,4,6],p:[],tr:'m'},
+  // SEM 7
+  {no:64,k:'GIZ 252759',n:'Skripsi',s:7,sks:4,t:'K',c:[1,2,4,8],p:['GIZ 252647'],tr:'r'},
+  {no:65,k:'GIZ 251760',n:'Kuliah Kerja Nyata',s:7,sks:3,t:'K',c:[1,2,4,6],p:[],tr:'m'},
+  // SEM 8
+  {no:66,k:'GIZ 251861',n:'Kepaniteraan Umum',s:8,sks:1,t:'K',c:[1,2,4,5],p:[],tr:'p'},
+  {no:67,k:'GIZ 251862',n:'PKL Gizi Klinik',s:8,sks:3,t:'K',c:[1,2,4,6],p:[],tr:'p'},
+  {no:68,k:'GIZ 251863',n:'PKL MPM',s:8,sks:3,t:'K',c:[1,2,4,7],p:[],tr:'p'},
+  {no:69,k:'GIZ 251864',n:'PKL Gizi Masyarakat',s:8,sks:3,t:'K',c:[1,2,4,6,9],p:[],tr:'p'},
+];
+
+const CS=['','Sikap & etika','Konsep gizi','Pemikiran kritis','Profesionalisme','Meta-kognitif','Komunikasi','Manajemen pangan','Riset EBP','Kearifan lokal'];
+const CF=['','Bertaqwa kepada Tuhan YME, bertanggung jawab, menjunjung nilai kemanusiaan dan etika Pancasila','Menguasai konsep teoritis, aplikasi, dan keterampilan bidang ilmu gizi','Mampu menerapkan pemikiran logis, kritis, sistematis, dan inovatif dalam menganalisis iptek gizi','Mampu menjunjung tinggi nilai profesionalisme dalam jaringan kerja','Mampu berfikir meta-kognitif dalam menerapkan teori gizi sesuai landasan ilmiah','Mampu berkomunikasi efektif dan berkolaborasi dalam penilaian status gizi dan pendidikan gizi','Mampu mendesain dan mengelola manajemen penyelenggaraan makanan dan wirausaha gizi','Mampu melakukan penelitian gizi berbasis Evidence Based Practice (EBP)','Mampu menerapkan konsep sumber daya perdesaan dan kearifan lokal dalam pelayanan gizi'];
+const TL={W:'Wajib Prodi',N:'MKWK Nasional',P:'Pilihan',K:'PKL / TA'};
+const TC={k:'tk',m:'tm',M:'tM',r:'tr',u:'tu',p:'tp'};
+
+let AD=MK.map(m=>({...m,pct:null}));
+let editM=false,actCPL=0,cinit={},archart=null;
+
+function pt(title,fn){return`<div class="pp"><div class="pi">🗺</div><p><strong>${title}</strong></p><p style="margin-top:5px">Letakkan <strong>${fn}</strong> di folder yang sama dengan HTML</p><div class="pun">📁 Folder = tempat file <em>dashboard_kurikulum_light.html</em> tersimpan</div></div>`}
+window.pt=pt;
+
+function switchTab(n,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('active');
+  btn.classList.add('active');
+  if(n==='matrix'&&!cinit.matrix){initMatrix();cinit.matrix=1}
+  if(n==='roadmap'&&!cinit.roadmap){initRoadmap();cinit.roadmap=1}
+  if(n==='heatmap'&&!cinit.heatmap){initHeatmap();cinit.heatmap=1}
+  if(n==='assess'){renderAssess();renderCPLStat();renderAR()}
+}
+
+/* ── RADAR ── */
+(()=>{
+  const c=document.getElementById('radarChart').getContext('2d');
+  new Chart(c,{type:'radar',data:{labels:['Gizi Klinik','Gizi\nMasyarakat','Manajemen\nPangan','Riset & EBP','Komunikasi\n& Edukasi','Kearifan\nLokal','Pondasi\nUmum'],datasets:[{data:[28,18,15,13,12,10,4],backgroundColor:'rgba(37,99,235,0.09)',borderColor:'#2563EB',borderWidth:2,pointBackgroundColor:'#2563EB',pointRadius:5,pointHoverRadius:7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{beginAtZero:true,max:35,ticks:{font:{size:10},color:'#94A3B8',stepSize:10},pointLabels:{font:{size:11},color:'#4A5568'},grid:{color:'rgba(0,0,0,0.055)'},angleLines:{color:'rgba(0,0,0,0.055)'}}}}});
+})();
+(()=>{
+  const c=document.getElementById('plChart').getContext('2d');
+  new Chart(c,{type:'bar',data:{labels:['PL1 Pengambil\nKeputusan','PL2 Care\nProvider','PL3 Supervisor\nPelayanan','PL4 Supervisor\nPendidikan','PL5 Community\nLeader','PL6 Pelaksana\nRiset','PL7\nEntrepreneur'],datasets:[{data:[28,32,30,18,14,16,12],backgroundColor:['#2563EB','#7C3AED','#059669','#D97706','#DB2777','#0891B2','#65A30D'],borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},color:'#94A3B8',maxRotation:0},grid:{display:false}},y:{ticks:{font:{size:10},color:'#94A3B8'},grid:{color:'rgba(0,0,0,0.04)'},title:{display:true,text:'Est. SKS',font:{size:10},color:'#94A3B8'}}}}});
+})();
+
+/* ── MATRIX ── */
+function initMatrix(){
+  const row=document.getElementById('mf');
+  [['Semua CPL',0],...CS.slice(1).map((s,i)=>[`CPL-${i+1}: ${s}`,i+1])].forEach(([lbl,v])=>{
+    const b=document.createElement('button');b.className='chip'+(v===0?' sel':'');
+    b.textContent=lbl;b.onclick=()=>filterMatrix(v);row.appendChild(b);
+  });
+  renderMatrix(0);
+}
+function filterMatrix(c){
+  actCPL=c;
+  document.querySelectorAll('.chip').forEach((b,i)=>b.classList.toggle('sel',i===c));
+  const lst=c===0?MK:MK.filter(m=>m.c.includes(c));
+  document.getElementById('mi').innerHTML=c===0
+    ?`Menampilkan semua <strong>69 mata kuliah</strong>. Klik CPL untuk memfilter — titik hijau = CPL dipilih.`
+    :`<strong>CPL-${c} — ${CS[c]}:</strong> ${CF[c]}<br><strong>${lst.length} MK</strong> mendukung CPL ini.`;
+  renderMatrix(c);
+}
+function renderMatrix(c){
+  const tbody=document.getElementById('mb');tbody.innerHTML='';
+  const lst=c===0?MK:MK.filter(m=>m.c.includes(c));
+  lst.forEach(mk=>{
+    const tr=document.createElement('tr');
+    let h=`<td class="mn">${mk.n}<span class="tt tt${mk.t}">${TL[mk.t]}</span></td><td class="mc">${mk.k}</td><td style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);text-align:center">${mk.s}</td><td style="font-size:11px;font-family:'JetBrains Mono',monospace;text-align:center;color:var(--text2)">${mk.sks}</td>`;
+    for(let i=1;i<=9;i++){
+      const has=mk.c.includes(i),hi=c>0&&has&&i===c;
+      h+=`<td>${has?`<span class="${hi?'dhi':'don'}"></span>`:`<span class="dof"></span>`}</td>`;
+    }
+    tr.innerHTML=h;tbody.appendChild(tr);
+  });
+}
+
+/* ── ROADMAP ── */
+function initRoadmap(){
+  const g=document.getElementById('rg');
+  const SS=[0,19,20,24,24,21,21,7,10];
+  for(let s=1;s<=8;s++){
+    const col=document.createElement('div');col.className='rc';
+    col.innerHTML=`<div class="rh">Semester ${s}</div><div class="rs">${SS[s]} SKS</div>`;
+    MK.filter(m=>m.s===s).forEach(mk=>{
+      const nd=document.createElement('div');
+      nd.className=`rn ${TC[mk.tr]||'tu'}`;
+      const pra=mk.p.length?`<div class="rnp">↳ ${mk.p.map(x=>x.replace('GIZ ','').replace('UNO ','')).join(', ')}</div>`:'';
+      nd.innerHTML=`<div class="rc2">${mk.k}</div><div class="rna">${mk.n}</div><div class="rns">${mk.sks} SKS · ${TL[mk.t]}</div>${pra}`;
+      nd.onclick=()=>openMdl(mk);
+      col.appendChild(nd);
+    });
+    g.appendChild(col);
+  }
+}
+function openMdl(mk){
+  document.getElementById('mco').textContent=mk.k;
+  document.getElementById('mna').textContent=mk.n;
+  document.getElementById('mde').textContent=`${mk.sks} SKS · Semester ${mk.s} · ${TL[mk.t]}`;
+  const rc=mk.k.replace(/[\s-]+/g,'');
+  document.getElementById('mrl').href=`RPS_${rc}.pdf`;
+  document.getElementById('mrl').textContent=`📄 Buka RPS — ${mk.k}`;
+  const cd=document.getElementById('mcp');cd.innerHTML='';
+  mk.c.forEach(ci=>{
+    const sp=document.createElement('span');
+    sp.style.cssText='font-size:10px;padding:2px 8px;border-radius:8px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;font-weight:600;font-family:"JetBrains Mono",monospace';
+    sp.textContent=`CPL-${ci}`;cd.appendChild(sp);
+  });
+  document.getElementById('mdl').classList.add('open');
+}
+function closeMdl(){document.getElementById('mdl').classList.remove('open')}
+document.getElementById('mdl').onclick=e=>{if(e.target===e.currentTarget)closeMdl()};
+
+function showPeta(w,btn){
+  document.querySelectorAll('.ptb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('pw-k').style.display=w==='k'?'flex':'none';
+  document.getElementById('pw-c').style.display=w==='c'?'flex':'none';
+}
+
+/* ── HEATMAP ── */
+function initHeatmap(){
+  const g=document.getElementById('hg');
+  const rows=[
+    {lbl:'Total SKS',d:[19,20,24,24,21,21,7,10],max:24},
+    {lbl:'Jml MK',d:[8,9,11,10,13,12,2,4],max:13},
+    {lbl:'SKS Wajib',d:[19,14,24,24,15,14,0,0],max:24},
+    {lbl:'SKS Pilihan',d:[0,0,0,0,6,6,0,0],max:6},
+  ];
+  const PAL=['#EFF6FF','#DBEAFE','#BFDBFE','#93C5FD','#60A5FA','#3B82F6'];
+  const TC2=['#4A5568','#1E40AF','#1E40AF','#1D4ED8','#fff','#fff'];
+  const em=document.createElement('div');g.appendChild(em);
+  for(let s=1;s<=8;s++){const d=document.createElement('div');d.className='hch';d.textContent=`S${s}`;g.appendChild(d);}
+  rows.forEach(row=>{
+    const l=document.createElement('div');l.className='hl';l.textContent=row.lbl;g.appendChild(l);
+    row.d.forEach(v=>{
+      const c=document.createElement('div');c.className='hc';
+      const lv=Math.min(Math.round((v/row.max)*5),5);
+      c.style.background=PAL[lv];
+      c.innerHTML=`<div class="hn" style="color:${TC2[lv]}">${v}</div><div class="hsu" style="color:${TC2[lv]}">${row.lbl.includes('SKS')?'SKS':'MK'}</div>`;
+      g.appendChild(c);
+    });
+  });
+  initMChart();initTChart();
+}
+function initMChart(){
+  const ctx=document.getElementById('mChart').getContext('2d');
+  const d=[];for(let s=1;s<=8;s++){let cnt=0;MK.filter(m=>m.s===s).forEach(m=>cnt+=m.c.length);d.push(cnt);}
+  new Chart(ctx,{type:'bar',data:{labels:['S1','S2','S3','S4','S5','S6','S7','S8'],datasets:[{data:d,backgroundColor:'rgba(37,99,235,0.65)',borderColor:'#2563EB',borderWidth:1,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11},color:'#94A3B8'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#94A3B8'},grid:{color:'rgba(0,0,0,0.04)'},title:{display:true,text:'Σ muatan CPL aktif',font:{size:10},color:'#94A3B8'}}}}});
+}
+function initTChart(){
+  const ctx=document.getElementById('tChart').getContext('2d');
+  const W=[],P=[],N=[],K=[];
+  for(let s=1;s<=8;s++){
+    const sm=MK.filter(m=>m.s===s);const tot=sm.length||1;
+    W.push(Math.round(sm.filter(m=>m.t==='W').length/tot*100));
+    P.push(Math.round(sm.filter(m=>m.t==='P').length/tot*100));
+    N.push(Math.round(sm.filter(m=>m.t==='N').length/tot*100));
+    K.push(Math.round(sm.filter(m=>m.t==='K').length/tot*100));
+  }
+  new Chart(ctx,{type:'bar',data:{labels:['S1','S2','S3','S4','S5','S6','S7','S8'],datasets:[{data:W,backgroundColor:'rgba(37,99,235,0.78)',borderRadius:3},{data:P,backgroundColor:'rgba(5,150,105,0.78)',borderRadius:3},{data:N,backgroundColor:'rgba(217,119,6,0.78)',borderRadius:3},{data:K,backgroundColor:'rgba(124,58,237,0.78)',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{font:{size:10},color:'#94A3B8'},grid:{display:false}},y:{stacked:true,max:100,ticks:{font:{size:10},color:'#94A3B8',callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.04)'}}}}});
+}
+
+/* ── ASSESS ── */
+function setMode(m){
+  editM=m==='edit';
+  document.getElementById('bv').classList.toggle('active',!editM);
+  document.getElementById('be').classList.toggle('active',editM);
+  document.getElementById('sb').style.display=editM?'inline-block':'none';
+  renderAssess();
+}
+function saveAssess(){
+  document.querySelectorAll('.ain').forEach(inp=>{
+    const v=parseFloat(inp.value),idx=parseInt(inp.dataset.idx);
+    AD[idx].pct=isNaN(v)?null:Math.min(100,Math.max(0,v));
+  });
+  setMode('view');renderCPLStat();renderAR();updateKPI();
+}
+function updateKPI(){
+  const f=AD.filter(d=>d.pct!==null);
+  document.getElementById('kpi-avg').textContent=f.length===0?'—':Math.round(f.reduce((a,b)=>a+b.pct,0)/f.length)+'%';
+  document.getElementById('ab').textContent=f.length>0?`${f.length} data`:'isi data';
+}
+const gc=v=>v===null?'#94A3B8':v>=80?'#059669':v>=65?'#D97706':'#DC2626';
+const gsc=v=>v===null?'sn':v>=80?'so':v>=65?'sw':'sc';
+const gsl=v=>v===null?'Belum diisi':v>=80?'Tercapai':v>=65?'Perlu perhatian':'Kritis';
+
+function renderAssess(){
+  const lst=document.getElementById('al');lst.innerHTML='';
+  const sorted=editM?[...AD]:[...AD].sort((a,b)=>(a.pct??50)-(b.pct??50));
+  sorted.forEach(d=>{
+    const oi=AD.indexOf(d);
+    const row=document.createElement('div');row.className='arow';
+    if(editM){
+      row.innerHTML=`<div class="amk">${d.n}<span class="amkc">${d.k}</span></div><div class="asem">S${d.s}</div><div class="abw"><input class="ain" type="number" min="0" max="100" value="${d.pct!==null?d.pct:''}" placeholder="0–100" data-idx="${oi}"><span style="font-size:11px;color:var(--text3);margin-left:4px">%</span></div>`;
+    } else {
+      const w=d.pct!==null?d.pct:0;const co=gc(d.pct);
+      row.innerHTML=`<div class="amk">${d.n}<span class="amkc">${d.k}</span></div><div class="asem">S${d.s}</div><div class="abw"><div class="abg"><div class="abf" style="width:${w}%;background:${co}">${d.pct!==null&&d.pct>12?d.pct+'%':''}</div></div></div><div class="apct" style="color:${co}">${d.pct!==null?d.pct+'%':'—'}</div><div class="sp ${gsc(d.pct)}">${gsl(d.pct)}</div>`;
+    }
+    lst.appendChild(row);
+  });
+}
+function renderCPLStat(){
+  const g=document.getElementById('csg');g.innerHTML='';
+  for(let i=1;i<=9;i++){
+    const mk=AD.filter(d=>d.c.includes(i)&&d.pct!==null);
+    const avg=mk.length>0?Math.round(mk.reduce((a,b)=>a+b.pct,0)/mk.length):null;
+    const co=gc(avg);
+    const c=document.createElement('div');c.className='csc';
+    c.innerHTML=`<div class="cc">CPL-${i}</div><div class="cv" style="color:${co}">${avg!==null?avg+'%':'—'}</div><div class="cs">${CS[i]}</div><div class="mb"><div class="mf2" style="width:${avg||0}%;background:${co}"></div></div>`;
+    g.appendChild(c);
+  }
+}
+function renderAR(){
+  const data=[];
+  for(let i=1;i<=9;i++){const mk=AD.filter(d=>d.c.includes(i)&&d.pct!==null);data.push(mk.length>0?Math.round(mk.reduce((a,b)=>a+b.pct,0)/mk.length):0);}
+  const ctx=document.getElementById('ar').getContext('2d');
+  if(archart){archart.data.datasets[0].data=data;archart.update();return;}
+  archart=new Chart(ctx,{type:'radar',data:{labels:CS.slice(1),datasets:[{label:'Capaian',data,backgroundColor:'rgba(37,99,235,0.09)',borderColor:'#2563EB',borderWidth:2,pointBackgroundColor:'#2563EB',pointRadius:4},{label:'Target 80%',data:[80,80,80,80,80,80,80,80,80],backgroundColor:'rgba(5,150,105,0.04)',borderColor:'rgba(5,150,105,0.5)',borderWidth:1.5,borderDash:[5,5],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{beginAtZero:true,max:100,ticks:{font:{size:9},color:'#94A3B8',stepSize:20},pointLabels:{font:{size:10},color:'#4A5568'},grid:{color:'rgba(0,0,0,0.055)'},angleLines:{color:'rgba(0,0,0,0.055)'}}}}});
+}
+
+renderAssess();renderCPLStat();renderAR();
+</script>
+</body>
+</html>
